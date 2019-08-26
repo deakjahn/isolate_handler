@@ -1,0 +1,16 @@
+name: isolate_handler
+description: Effortless isolates abstraction layer with support for MethodChannel calls.
+version: 0.1.0
+author: Krista Koivisto
+homepage: https://github.com/krista-koivisto/
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
