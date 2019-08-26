@@ -1,7 +1,7 @@
 # Isolate Handler
 
-High-level interface for spawning, interacting with and destroying Dart
-Isolate instances.
+Effortless isolates abstraction layer with support for MethodChannel
+calls.
 
 ## Getting Started
 
@@ -38,7 +38,7 @@ motivation behind this package was to support access to native code from
 within an isolate when using as part of Flutter on a mobile device.
 
 Isolate Handler makes this relatively seamless, only requiring a list of
-channels to be provided.
+channels be provided.
 
 ## Using Isolate Handler
 

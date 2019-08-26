@@ -1,6 +1,6 @@
-/// High-level interface for spawning, interacting with and destroying Dart
-/// Isolate instances.
-/// 
+/// Effortless isolates abstraction layer with support for MethodChannel
+/// calls.
+///
 /// **What's an isolate?**
 ///
 /// In the words of the [Dart documentation](https://api.dartlang.org/stable/2.4.1/dart-isolate/dart-isolate-library.html)
@@ -116,7 +116,6 @@ import 'src/handled_isolate.dart';
 import 'src/handled_isolate_channel_message.dart';
 import 'src/handled_isolate_context.dart';
 
-
 /// High-level isolate handler for Flutter.
 ///
 /// High-level interface for spawning, interacting with and destroying
@@ -194,17 +193,16 @@ class IsolateHandler {
   /// Throws if `name` is not unique or `function` is null.
   ///
   /// Returns spawned [HandledIsolate] instance.
-  HandledIsolate spawn<T>(
-    void Function(HandledIsolateContext) function, {
-    String name,
-    void Function(T message) onReceive,
-    void Function() onInitialized,
-    List<MethodChannel> channels,
-    bool paused: false,
-    bool errorsAreFatal,
-    SendPort onExit,
-    SendPort onError,
-    String debugName}) {
+  HandledIsolate spawn<T>(void Function(HandledIsolateContext) function,
+      {String name,
+      void Function(T message) onReceive,
+      void Function() onInitialized,
+      List<MethodChannel> channels,
+      bool paused: false,
+      bool errorsAreFatal,
+      SendPort onExit,
+      SendPort onError,
+      String debugName}) {
     assert(function != null);
     assert(name == null || !isolates.containsKey(name));
 
@@ -213,11 +211,10 @@ class IsolateHandler {
     }
 
     isolates[name] = HandledIsolate<T>(
-      name: name,
-      function: function,
-      onInitialized: onInitialized,
-      channels: channels
-    );
+        name: name,
+        function: function,
+        onInitialized: onInitialized,
+        channels: channels);
 
     isolates[name].messenger.listen((dynamic message) {
       if (onReceive != null) {
@@ -237,7 +234,8 @@ class IsolateHandler {
   /// Handles intercepted [BinaryMessage] calls sent from [HandledIsolate] and
   /// returns the result to the isolate.
   void _handleChannelMessages(HandledIsolateChannelMessage message) async {
-    ByteData result = await defaultBinaryMessenger.send(message.channel, message.data);
+    ByteData result =
+        await defaultBinaryMessenger.send(message.channel, message.data);
     isolates[message.source].dataChannel.send(result);
   }
 

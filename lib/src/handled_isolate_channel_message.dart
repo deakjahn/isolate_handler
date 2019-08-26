@@ -5,8 +5,10 @@ import 'dart:typed_data';
 class HandledIsolateChannelMessage {
   /// Name of the channel from which the message originated.
   final String channel;
+
   /// Data contained in the channel message.
   final ByteData data;
+
   /// Identifying name of source isolate.
   final String source;
 

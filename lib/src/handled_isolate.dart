@@ -100,41 +100,48 @@ class HandledIsolate<T> {
   /// Throws if `name` is not unique or `function` is null.
   ///
   /// Returns spawned [HandledIsolate] instance.
-  HandledIsolate({
-    String name,
-    void Function(HandledIsolateContext) function,
-    void Function() onInitialized,
-    List<MethodChannel> channels,
-    bool paused: false,
-    bool errorsAreFatal,
-    SendPort onExit,
-    SendPort onError,
-    String debugName
-  }) {
+  HandledIsolate(
+      {String name,
+      void Function(HandledIsolateContext) function,
+      void Function() onInitialized,
+      List<MethodChannel> channels,
+      bool paused: false,
+      bool errorsAreFatal,
+      SendPort onExit,
+      SendPort onError,
+      String debugName}) {
     assert(name != null);
     assert(function != null);
 
     _name = name;
     _messenger = messenger ?? HandledIsolateMessenger();
-    _dataChannel = dataChannel ?? HandledIsolateMessenger(onInitialized: onInitialized);
+    _dataChannel =
+        dataChannel ?? HandledIsolateMessenger(onInitialized: onInitialized);
     _channels = channels;
 
-    _init(function, paused: paused, errorsAreFatal: errorsAreFatal,
-        onExit: onExit, onError: onError, debugName: debugName);
+    _init(function,
+        paused: paused,
+        errorsAreFatal: errorsAreFatal,
+        onExit: onExit,
+        onError: onError,
+        debugName: debugName);
   }
 
   /// Establishes communication channels between this instance and `context`.
-  /// 
+  ///
   /// Subscribes to passed channels by setting up mock message handler to
   /// intercept calls to channel within isolate. Passes them to the main
   /// isolate to be handled there.
-  /// 
+  ///
   /// Returns main communication channel.
   static HandledIsolateMessenger initialize(
+
       /// Context to which connection should be established.
       HandledIsolateContext context) {
-    HandledIsolateMessenger msg = HandledIsolateMessenger(remotePort: context.messenger);
-    HandledIsolateMessenger data = HandledIsolateMessenger(remotePort: context.dataChannel);
+    HandledIsolateMessenger msg =
+        HandledIsolateMessenger(remotePort: context.messenger);
+    HandledIsolateMessenger data =
+        HandledIsolateMessenger(remotePort: context.dataChannel);
 
     context.messenger.send(msg.inPort.sendPort);
     context.dataChannel.send(data.inPort.sendPort);
@@ -142,8 +149,10 @@ class HandledIsolate<T> {
     // Set up mock message handler to intercept calls to channel within isolate
     // and run them by the main isolate.
     context.channels?.forEach((channel) {
-      defaultBinaryMessenger.setMockMessageHandler(channel.name, (ByteData message) async {
-        data.send(HandledIsolateChannelMessage(channel.name, message, context.name));
+      defaultBinaryMessenger.setMockMessageHandler(channel.name,
+          (ByteData message) async {
+        data.send(
+            HandledIsolateChannelMessage(channel.name, message, context.name));
         return await data.broadcast.first;
       });
     });
@@ -190,6 +199,7 @@ class HandledIsolate<T> {
   /// isolate was started as [paused], it may already have terminated before
   /// those methods can complete.
   void _init(
+
       /// Entry point of the [Isolate]. Must be a top-level or static function.
       /// Passed to constructor. May not be null.
       Function(HandledIsolateContext) function,
@@ -197,12 +207,15 @@ class HandledIsolate<T> {
       bool errorsAreFatal,
       SendPort onExit,
       SendPort onError,
-      String debugName}
-  ) async {
+      String debugName}) async {
     assert(function != null);
-    final message = HandledIsolateContext(messenger.outPort, dataChannel.outPort, _channels, name);
-    _isolate = await Isolate.spawn(function, message, paused: paused,
-        errorsAreFatal: errorsAreFatal, onExit: onExit, onError: onError,
+    final message = HandledIsolateContext(
+        messenger.outPort, dataChannel.outPort, _channels, name);
+    _isolate = await Isolate.spawn(function, message,
+        paused: paused,
+        errorsAreFatal: errorsAreFatal,
+        onExit: onExit,
+        onError: onError,
         debugName: debugName);
   }
 
