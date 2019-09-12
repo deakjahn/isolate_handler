@@ -12,8 +12,7 @@
 
 // First, let's do our imports
 import 'package:flutter/services.dart';
-
-import '../isolate_handler.dart';
+import 'package:isolate_handler/isolate_handler.dart';
 
 // With that out of the way, let's create a new IsolateHandler instance. This
 // is what we will use to spawn isolates.

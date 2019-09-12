@@ -86,22 +86,6 @@
 /// That's it. The only real change from normal use is that we supplied our
 /// Isolate Handler with a list of channels we might need to invoke a
 /// method on.
-///
-/// **Limitations**
-///
-/// * At the moment only `MethodChannel` is supported, `EventChannel`
-/// streams are not. Support for them may or may not be added in the future.
-///
-/// * Isolate Handler uses `setMockMessageHandler` to intercept calls. As
-/// there can only be one mock message handler active at any time, another
-/// may not be set within the isolate for the one of the registered
-/// channels.
-///
-/// * Custom message handlers are also not supported at the time.
-///
-/// If any other limitations are found or if adding support for any of the
-/// already known limitations is important to you, please raise an issue on
-/// GitHub and support may be added as time permits.
 library isolate_handler;
 
 export 'src/handled_isolate.dart';

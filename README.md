@@ -1,9 +1,15 @@
 # Isolate Handler
 
-Effortless isolates abstraction layer with support for MethodChannel
+Effortless isolates abstraction layer with support* for MethodChannel
 calls.
 
 ## Getting Started
+
+#### Be aware of limitations
+
+Accessing `MethodChannel`s from isolates using this package should not be
+done in a production environment, at least not without full understanding
+of the limitations. Please read the section titled *Limitations* first.
 
 #### What's an isolate?
 
@@ -26,8 +32,10 @@ by Didier Boelens.
 
 #### Why should I use Isolate Handler?
 
-**Short answer**: access to `MethodChannel` calls from within isolates in
+**Short answer**: access* to `MethodChannel` calls from within isolates in
 Flutter.
+
+*(\* Be aware of the limitations.)*
 
 Dart already has a very clean interface for spawning and interacting
 with isolates, using Isolate Handler instead of the regular interface
@@ -169,20 +177,29 @@ method on and we also added an `invokeMethod` call inside our isolate.
 
 ## Limitations
 
+* Isolate Handler accesses Flutter's [platform thread](https://github.com/flutter/flutter/wiki/The-Engine-architecture#platform-task-runner), as
+such plugins doing heavy lifting will still cause the UI to be locked up.
+Only Dart code is executed in the isolate—the plugin must spawn its own
+native thread to run in.
+
+* Isolate Handler uses a workaround for `MethodChannel` support because
+there is no proper way of supporting them. The workaround works well for
+simple applications, but **may become unpredictable in more complex
+scenarios.**
+
 * At the moment only `MethodChannel` is supported, `EventChannel`
-streams are not. Support for them may or may not be added in the future.
+streams are not. Support for them may not be possible to add due to
+the fact that Flutter sets its own custom handler to deal with them.
 
 * Isolate Handler uses `setMockMessageHandler` to intercept calls. As
-there can only be one mock message handler active at any time, another
-may not be set within the isolate for the one of the registered
+there can only be one mock message handler active at any given time,
+another may not be set within the isolate for the one of the registered
 channels.
 
-* Custom message handlers are also not supported at the time.
-
-If any other limitations are found or if adding support for any of the
-already known limitations is important to you, please raise an issue and
-support may be added as time permits.
+* Custom message handlers and codecs are also not supported at the time.
 
 ## Bugs
 
-None known at the moment.
+* Race condition where if two `MethodChannel`s belonging to the same
+isolate request data at the same time, results may be sent to the wrong
+`MethodChannel`.
