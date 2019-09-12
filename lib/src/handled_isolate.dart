@@ -152,7 +152,7 @@ class HandledIsolate<T> {
       defaultBinaryMessenger.setMockMessageHandler(channel.name,
           (ByteData message) async {
         data.send(
-          HandledIsolateChannelMessage(channel.name, message, context.name));
+            HandledIsolateChannelMessage(channel.name, message, context.name));
         return await data.broadcast.first;
       });
     });
