@@ -1,3 +1,14 @@
+## [0.1.2] - 2019-09-12
+
+* Fixed error introduced with Flutter version *1.12.13+hotfix.5* where the
+ServicesBinding instance would not be initialized by the time isolate handler
+requested use of its `defaultBinaryMessenger`. *Thanks to @deakjahn for
+reporting the bug.*
+
+* Changed `defaultBinaryMessenger` to
+`ServicesBinding.instance.defaultBinaryMessenger` as it is now the recommended
+way of accessing the default binary messenger.
+
 ## [0.1.1+info] - 2019-09-12
 
 * Added warning about platform thread potentially locking up UI.

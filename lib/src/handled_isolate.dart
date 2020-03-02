@@ -2,6 +2,7 @@ import 'dart:isolate';
 
 import 'package:flutter/services.dart';
 
+import 'handled_isolate_binding.dart';
 import 'handled_isolate_channel_message.dart';
 import 'handled_isolate_context.dart';
 import 'handled_isolate_messenger.dart';
@@ -146,11 +147,13 @@ class HandledIsolate<T> {
     context.messenger.send(msg.inPort.sendPort);
     context.dataChannel.send(data.inPort.sendPort);
 
+    IsolateServicesBinding.ensureInitialized();
+
     // Set up mock message handler to intercept calls to channel within isolate
     // and run them by the main isolate.
     context.channels?.forEach((channel) {
-      defaultBinaryMessenger.setMockMessageHandler(channel.name,
-          (ByteData message) async {
+      ServicesBinding.instance.defaultBinaryMessenger
+          .setMockMessageHandler(channel.name, (ByteData message) async {
         data.send(
             HandledIsolateChannelMessage(channel.name, message, context.name));
         return await data.broadcast.first;

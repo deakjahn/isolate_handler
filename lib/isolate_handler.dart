@@ -96,6 +96,7 @@ import 'dart:isolate';
 
 import 'package:flutter/services.dart';
 
+import 'src/handled_isolate_binding.dart';
 import 'src/handled_isolate.dart';
 import 'src/handled_isolate_channel_message.dart';
 import 'src/handled_isolate_context.dart';
@@ -110,6 +111,10 @@ class IsolateHandler {
 
   /// Map of all spawned isolates.
   Map<String, HandledIsolate> get isolates => _isolates;
+
+  IsolateHandler() {
+    IsolateServicesBinding.ensureInitialized();
+  }
 
   /// Spawns a new [HandledIsolate] of type `T` (`dynamic` by default) with an
   /// entry point of `function`.
@@ -219,7 +224,7 @@ class IsolateHandler {
   /// returns the result to the isolate.
   void _handleChannelMessages(HandledIsolateChannelMessage message) async {
     ByteData result =
-        await defaultBinaryMessenger.send(message.channel, message.data);
+        await ServicesBinding.instance.defaultBinaryMessenger.send(message.channel, message.data);
     isolates[message.source].dataChannel.send(result);
   }
 
