@@ -223,8 +223,8 @@ class IsolateHandler {
   /// Handles intercepted [BinaryMessage] calls sent from [HandledIsolate] and
   /// returns the result to the isolate.
   void _handleChannelMessages(HandledIsolateChannelMessage message) async {
-    ByteData result =
-        await ServicesBinding.instance.defaultBinaryMessenger.send(message.channel, message.data);
+    ByteData result = await ServicesBinding.instance.defaultBinaryMessenger
+        .send(message.channel, message.data);
     isolates[message.source].dataChannel.send(result);
   }
 
