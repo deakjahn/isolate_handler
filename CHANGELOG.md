@@ -1,3 +1,8 @@
+## [0.1.2+hotfix1] - 2020-03-01
+
+* Added a null-check for name in `IsolateHandler.kill`'s dispose call. *Thanks
+to @deakjahn for the suggestion.*
+
 ## [0.1.2+formatfix] - 2020-03-01
 
 * Fixed wrong date in changelog.

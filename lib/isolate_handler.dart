@@ -259,7 +259,7 @@ class IsolateHandler {
   void kill(String name) {
     assert(name != null);
 
-    isolates[name].dispose();
+    isolates[name]?.dispose();
     isolates.remove(name);
   }
 }
