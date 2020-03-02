@@ -1,4 +1,10 @@
-## [0.1.2] - 2019-09-12
+## [0.1.2+formatfix] - 2020-03-01
+
+* Fixed wrong date in changelog.
+
+* Fixed formatting using `flutter format` to better follow Flutter guidelines.
+
+## [0.1.2] - 2020-03-01
 
 * Fixed error introduced with Flutter version *1.12.13+hotfix.5* where the
 ServicesBinding instance would not be initialized by the time isolate handler

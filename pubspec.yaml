@@ -1,6 +1,6 @@
 name: isolate_handler
 description: Effortless isolates abstraction layer with support for MethodChannel calls.
-version: 0.1.2
+version: 0.1.2+formatfix
 homepage: https://github.com/krista-koivisto/isolate_handler
 documentation: https://github.com/krista-koivisto/isolate_handler/blob/master/README.md
 
