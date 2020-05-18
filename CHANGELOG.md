@@ -1,3 +1,7 @@
+## [0.1.2+hotfix2] - 2020-05-18
+
+* Added `ServicesBinding` mixin dependency `SchedulerBinding`. This is required since Flutter [#54286](https://github.com/flutter/flutter/pull/54286).
+
 ## [0.1.2+hotfix1] - 2020-03-01
 
 * Added a null-check for name in `IsolateHandler.kill`'s dispose call. *Thanks
