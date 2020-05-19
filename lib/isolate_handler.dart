@@ -75,21 +75,26 @@
 /// ```
 library isolate_handler;
 
-export 'src/handled_isolate.dart';
-export 'src/handled_isolate_context.dart';
-
 import 'dart:isolate';
+
+import 'package:flutter/foundation.dart';
 
 import 'src/handled_isolate.dart';
 import 'src/handled_isolate_context.dart';
 
+export 'src/handled_isolate.dart';
+export 'src/handled_isolate_context.dart';
+export 'src/handled_isolate_messenger.dart';
+
 /// High-level isolate handler for Flutter.
 ///
 /// High-level interface for spawning, interacting with and destroying
-/// [Isolate] instances.
+/// [TalkativeIsolate] instances.
 class IsolateHandler {
-  Map<String, HandledIsolate> _isolates = {};
+  final Map<String, HandledIsolate> _isolates = {};
   int _uid = 0;
+
+  IsolateHandler();
 
   /// Map of all spawned isolates.
   Map<String, HandledIsolate> get isolates => _isolates;
@@ -140,7 +145,7 @@ class IsolateHandler {
   /// corresponding parameter and was processed before the isolate starts
   /// running.
   ///
-  /// If [debugName] is provided, the spawned [Isolate] will be identifiable by
+  /// If [debugName] is provided, the spawned [TalkativeIsolate] will be identifiable by
   /// this name in debuggers and logging.
   ///
   /// If [errorsAreFatal] is omitted, the platform may choose a default behavior
@@ -156,24 +161,12 @@ class IsolateHandler {
   /// Throws if `name` is not unique or `function` is null.
   ///
   /// Returns spawned [HandledIsolate] instance.
-  HandledIsolate spawn<T>(void Function(HandledIsolateContext) function,
-      {String name,
-      void Function(T message) onReceive,
-      void Function() onInitialized,
-      bool paused: false,
-      bool errorsAreFatal,
-      SendPort onExit,
-      SendPort onError,
-      String debugName}) {
+  HandledIsolate spawn<T>(void Function(HandledIsolateContext) function, {String name, void Function(T message) onReceive, void Function() onInitialized, bool paused = false, bool errorsAreFatal, SendPort onExit, SendPort onError, String debugName}) {
     assert(function != null);
     assert(name == null || !isolates.containsKey(name));
 
-    if (name == null) {
-      name = '__anonymous_${_uid++}';
-    }
-
-    isolates[name] = HandledIsolate<T>(
-        name: name, function: function, onInitialized: onInitialized);
+    name ??= '__anonymous_${_uid++}';
+    isolates[name] = HandledIsolate<T>(name: name, function: function, onInitialized: onInitialized);
 
     isolates[name].messenger.listen((dynamic message) {
       if (onReceive != null) {
@@ -193,7 +186,7 @@ class IsolateHandler {
   /// or a [HandledIsolate] returned by the `spawn` function. May not be null.
   ///
   /// Throws if `to` or `message` are null.
-  void send(dynamic message, {dynamic to}) {
+  void send(dynamic message, {@required dynamic to}) {
     assert(to != null);
     assert(message != null);
 

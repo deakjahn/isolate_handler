@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'dart:isolate';
 
 /// Communication channel for sending data between [HandledIsolate] instances.
@@ -35,8 +34,7 @@ class HandledIsolateMessenger<T> {
   /// Communication channel for sending data between [HandledIsolate] instances.
   ///
   /// If `remotePort` is set, connects this instance's `outPort` to it.
-  HandledIsolateMessenger({SendPort remotePort, void Function() onInitialized})
-      : _onEstablishedConnection = onInitialized {
+  HandledIsolateMessenger({SendPort remotePort, void Function() onInitialized}) : _onEstablishedConnection = onInitialized {
     _broadcast = _port.asBroadcastStream();
     if (remotePort != null) {
       connectTo(remotePort);
@@ -88,10 +86,7 @@ class HandledIsolateMessenger<T> {
   ///
   /// The `onDone` handler will be called when the stream closes.
   /// The stream closes when `close` is called on `inPort`.
-  StreamSubscription<T> listen(void onData(var message),
-          {Function onError, void onDone(), bool cancelOnError}) =>
-      _port.listen((var message) => _listenResponse(message, onData),
-          onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+  StreamSubscription<T> listen(void Function(dynamic message) onData, {Function onError, void Function() onDone, bool cancelOnError}) => _port.listen((var message) => _listenResponse(message, onData), onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
   /// Disposes of the [HandledIsolateMessenger] by closing the receiving port.
   void dispose() {
