@@ -89,7 +89,7 @@ export 'src/handled_isolate_messenger.dart';
 /// High-level isolate handler for Flutter.
 ///
 /// High-level interface for spawning, interacting with and destroying
-/// [TalkativeIsolate] instances.
+/// [FlutterIsolate] instances.
 class IsolateHandler {
   final Map<String, HandledIsolate> _isolates = {};
   int _uid = 0;
@@ -145,7 +145,7 @@ class IsolateHandler {
   /// corresponding parameter and was processed before the isolate starts
   /// running.
   ///
-  /// If [debugName] is provided, the spawned [TalkativeIsolate] will be identifiable by
+  /// If [debugName] is provided, the spawned [FlutterIsolate] will be identifiable by
   /// this name in debuggers and logging.
   ///
   /// If [errorsAreFatal] is omitted, the platform may choose a default behavior
