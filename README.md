@@ -13,7 +13,7 @@ itself, isolates are:
 > memory, communicating only via messages.
 
 In short, Dart is a single-threaded language, but it has support for
-concurrent execution of code through these so-called isolates.
+concurrent execution of code through isolates.
 
 This means that you can use isolates to execute code you want to run
 alongside your main thread, which is particularly useful for keeping
@@ -30,8 +30,7 @@ communication between—isolates.
 
 Dart already has a very clean interface for spawning and interacting
 with isolates, using Isolate Handler instead of the regular interface only
-provides a slightly simpler way of keeping track of and communicating with
-isolates.
+provides a slightly simpler way of keeping track of and communicating with them.
 
 ## Using Isolate Handler
 
@@ -52,7 +51,7 @@ is instead opened automatically.
 
 Just spawning an isolate provides no benefit over simply using
 `Isolate.spawn`, so let's move on to a slightly more useful example;
-sending data to isolate and receiving some back.
+sending data to an isolate and receiving some back.
 
 Let's do a complete project where we start an isolate and send it an
 integer, have it add one to our count and return the value. We will also
@@ -105,7 +104,7 @@ Flutter making it infeasible.
 
 It is worth noting that running native plugins from a Dart isolate does not
 offer any performance advantage as all native code is run on the main (UI)
-thread.
+thread by default.
 
 In order to improve performance of a native plugin, the plugin must create its
 own thread on the native platform.
