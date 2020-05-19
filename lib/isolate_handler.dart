@@ -59,7 +59,7 @@
 /// }
 ///
 /// // This function happens in the isolate.
-/// void entryPoint(HandledIsolateContext context) {
+/// void entryPoint(SendPort context) {
 ///   // Calling initialize from the entry point with the context is
 ///   // required if communication is desired. It returns a messenger which
 ///   // allows listening and sending information to the main isolate.
@@ -80,10 +80,8 @@ import 'dart:isolate';
 import 'package:flutter/foundation.dart';
 
 import 'src/handled_isolate.dart';
-import 'src/handled_isolate_context.dart';
 
 export 'src/handled_isolate.dart';
-export 'src/handled_isolate_context.dart';
 export 'src/handled_isolate_messenger.dart';
 
 /// High-level isolate handler for Flutter.
@@ -104,7 +102,7 @@ class IsolateHandler {
   ///
   /// The argument [function] specifies the initial function to call in the
   /// spawned isolate. The entry-point function is invoked in the new isolate
-  /// with [HandledIsolateContext] as the only argument.
+  /// with [SendPort] as the only argument.
   ///
   /// The function must be a top-level function or a static method that can be
   /// called with a single argument, that is, a compile-time constant function
@@ -135,7 +133,7 @@ class IsolateHandler {
   ///
   /// If the [paused] parameter is set to `true`, the isolate will start up in
   /// a paused state, just before calling the [function] function with the
-  /// [HandledIsolateContext], as if by an initial call of
+  /// [SendPort], as if by an initial call of
   /// `isolate.pause(isolate.pauseCapability)`. To resume the isolate,
   /// call `isolate.resume(isolate.pauseCapability)`.
   ///
@@ -161,7 +159,7 @@ class IsolateHandler {
   /// Throws if `name` is not unique or `function` is null.
   ///
   /// Returns spawned [HandledIsolate] instance.
-  HandledIsolate spawn<T>(void Function(HandledIsolateContext) function, {String name, void Function(T message) onReceive, void Function() onInitialized, bool paused = false, bool errorsAreFatal, SendPort onExit, SendPort onError, String debugName}) {
+  HandledIsolate spawn<T>(void Function(SendPort) function, {String name, void Function(T message) onReceive, void Function() onInitialized, bool paused = false, bool errorsAreFatal, SendPort onExit, SendPort onError, String debugName}) {
     assert(function != null);
     assert(name == null || !isolates.containsKey(name));
 

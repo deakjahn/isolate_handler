@@ -1,3 +1,5 @@
+import 'dart:isolate';
+
 /// Welcome to the Isolate Handler example
 ///
 /// In this example we will take a look at how to spawn an isolate and allow it
@@ -26,14 +28,14 @@ void main() {
   isolates.spawn<int>(entryPoint,
       // Here we give a name to the isolate, by which we can access is later,
       // for example when sending it data and when disposing of it.
-      name: "counter",
+      name: 'counter',
       // onReceive is executed every time data is received from the spawned
       // isolate. We will let the setCounter function deal with any incoming
       // data.
       onReceive: setCounter,
       // Executed once when spawned isolate is ready for communication. We will
       // send the isolate a request to perform a count right away.
-      onInitialized: () => isolates.send(counter, to: "counter"));
+      onInitialized: () => isolates.send(counter, to: 'counter'));
 }
 
 void setCounter(int count) {
@@ -41,14 +43,14 @@ void setCounter(int count) {
   counter = count;
 
   // Show the new count.
-  print("Counter is now $counter");
+  print('Counter is now $counter');
 
   // We will no longer be needing the isolate, let's dispose of it.
-  isolates.kill("counter");
+  isolates.kill('counter');
 }
 
 // This function happens in the isolate.
-void entryPoint(HandledIsolateContext context) {
+void entryPoint(SendPort context) {
   // Calling initialize from the entry point with the context is
   // required if communication is desired. It returns a messenger which
   // allows listening and sending information to the main isolate.
