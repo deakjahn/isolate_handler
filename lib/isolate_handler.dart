@@ -1,5 +1,4 @@
-/// Effortless isolates abstraction layer with support for MethodChannel
-/// calls.
+/// Effortless isolates abstraction layer.
 ///
 /// **What's an isolate?**
 ///
@@ -33,16 +32,11 @@
 /// point. Messaging has been abstracted away and a communications channel
 /// is instead opened automatically.
 ///
-/// **Call to `invokeMethod` from isolate**
+/// **Communicating with an isolate**
 ///
 /// ```dart
 /// final isolates = IsolateHandler();
 /// int counter = 0;
-///
-/// // Let's store our channels in a top-level Map for convenience.
-/// const Map<String, MethodChannel> channels = {
-///   'counter': const MethodChannel('isolates.example/counter'),
-/// };
 ///
 /// void main() {
 ///   // Start a listener for ints sent from the isolate
@@ -52,9 +46,6 @@
 ///     onReceive: setCounter,
 ///     // Executed once when spawned isolate is ready for communication.
 ///     onInitialized: () => isolates.send(counter, to: "counter"),
-///     // Let's tell isolate handler we might end up calling any of the
-///     // channels in the map.
-///     channels: channels.values.toList()
 ///   );
 /// }
 ///
@@ -74,47 +65,36 @@
 ///   // allows listening and sending information to the main isolate.
 ///   final messenger = HandledIsolate.initialize(context);
 ///
-///   // Triggered every time data is received from the main isolate. We can
-///   // now ignore incoming data as count is kept on the native side.
-///   messenger.listen((data) async {
-///     final int result = await channels['counter'].invokeMethod('getNewCount');
-///     messenger.send(result);
+///   // Triggered every time data is received from the main isolate.
+///   messenger.listen((count) async {
+///    // Add one to the count and send the new value back to the main
+///    // isolate.
+///    messenger.send(++count);
 ///   });
 /// }
 /// ```
-///
-/// That's it. The only real change from normal use is that we supplied our
-/// Isolate Handler with a list of channels we might need to invoke a
-/// method on.
 library isolate_handler;
 
 export 'src/handled_isolate.dart';
 export 'src/handled_isolate_context.dart';
-export 'src/handled_isolate_messenger.dart';
 
 import 'dart:isolate';
 
 import 'package:flutter/services.dart';
 
-import 'src/handled_isolate_binding.dart';
 import 'src/handled_isolate.dart';
-import 'src/handled_isolate_channel_message.dart';
 import 'src/handled_isolate_context.dart';
 
 /// High-level isolate handler for Flutter.
 ///
 /// High-level interface for spawning, interacting with and destroying
-/// [Isolate] instances. Provides MethodChannel support within isolates.
+/// [Isolate] instances.
 class IsolateHandler {
   Map<String, HandledIsolate> _isolates = {};
   int _uid = 0;
 
   /// Map of all spawned isolates.
   Map<String, HandledIsolate> get isolates => _isolates;
-
-  IsolateHandler() {
-    IsolateServicesBinding.ensureInitialized();
-  }
 
   /// Spawns a new [HandledIsolate] of type `T` (`dynamic` by default) with an
   /// entry point of `function`.
@@ -150,10 +130,6 @@ class IsolateHandler {
   /// by a number. Avoiding names using the same format is good practice. Must
   /// be unique.
   ///
-  /// If the [channels] parameter is provided, the isolate will intercept and
-  /// pass all calls to the specified channels to the main isolate. This is
-  /// required if access is needed to native code from within the isolate.
-  ///
   /// If the [paused] parameter is set to `true`, the isolate will start up in
   /// a paused state, just before calling the [function] function with the
   /// [HandledIsolateContext], as if by an initial call of
@@ -186,7 +162,6 @@ class IsolateHandler {
       {String name,
       void Function(T message) onReceive,
       void Function() onInitialized,
-      List<MethodChannel> channels,
       bool paused: false,
       bool errorsAreFatal,
       SendPort onExit,
@@ -202,8 +177,7 @@ class IsolateHandler {
     isolates[name] = HandledIsolate<T>(
         name: name,
         function: function,
-        onInitialized: onInitialized,
-        channels: channels);
+        onInitialized: onInitialized);
 
     isolates[name].messenger.listen((dynamic message) {
       if (onReceive != null) {
@@ -211,21 +185,7 @@ class IsolateHandler {
       }
     });
 
-    isolates[name].dataChannel.listen((dynamic data) {
-      _handleChannelMessages(data);
-    });
-
     return isolates[name];
-  }
-
-  /// Main isolate [MethodChannel] message handler.
-  ///
-  /// Handles intercepted [BinaryMessage] calls sent from [HandledIsolate] and
-  /// returns the result to the isolate.
-  void _handleChannelMessages(HandledIsolateChannelMessage message) async {
-    ByteData result = await ServicesBinding.instance.defaultBinaryMessenger
-        .send(message.channel, message.data);
-    isolates[message.source].dataChannel.send(result);
   }
 
   /// Send message to a spawned isolate.

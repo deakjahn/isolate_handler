@@ -2,16 +2,12 @@ import 'dart:isolate';
 
 import 'package:flutter/services.dart';
 
-import 'handled_isolate_binding.dart';
-import 'handled_isolate_channel_message.dart';
 import 'handled_isolate_context.dart';
 import 'handled_isolate_messenger.dart';
 
 /// Instance of [Isolate] handled by [HandledIsolate].
 class HandledIsolate<T> {
-  HandledIsolateMessenger _dataChannel;
   HandledIsolateMessenger _messenger;
-  List<MethodChannel> _channels;
   Isolate _isolate;
   String _name;
 
@@ -36,10 +32,6 @@ class HandledIsolate<T> {
 
   /// Instance of [HandledIsolateMessenger] communication channel.
   HandledIsolateMessenger get messenger => _messenger;
-
-  /// Instance of [HandledIsolateMessenger] channel for exchanging internal
-  /// data with main isolate.
-  HandledIsolateMessenger get dataChannel => _dataChannel;
 
   /// Create a new instance of [HandledIsolate].
   ///
@@ -68,10 +60,6 @@ class HandledIsolate<T> {
   /// If the function argument [onInitialized] is specified, it will be called
   /// once communication channels have been established, meaning that the
   /// [HandledIsolate] instance is ready to send and receive data.
-  ///
-  /// If the [channels] parameter is provided, the isolate will intercept and
-  /// pass all calls to the specified channels to the main isolate. This is
-  /// required if access is needed to native code from within the isolate.
   ///
   /// If the [paused] parameter is set to `true`, the isolate will start up in
   /// a paused state, just before calling the [function] function with the
@@ -105,7 +93,6 @@ class HandledIsolate<T> {
       {String name,
       void Function(HandledIsolateContext) function,
       void Function() onInitialized,
-      List<MethodChannel> channels,
       bool paused: false,
       bool errorsAreFatal,
       SendPort onExit,
@@ -115,10 +102,8 @@ class HandledIsolate<T> {
     assert(function != null);
 
     _name = name;
-    _messenger = messenger ?? HandledIsolateMessenger();
-    _dataChannel =
-        dataChannel ?? HandledIsolateMessenger(onInitialized: onInitialized);
-    _channels = channels;
+    _messenger =
+        messenger ?? HandledIsolateMessenger(onInitialized: onInitialized);
 
     _init(function,
         paused: paused,
@@ -136,29 +121,12 @@ class HandledIsolate<T> {
   ///
   /// Returns main communication channel.
   static HandledIsolateMessenger initialize(
-
       /// Context to which connection should be established.
       HandledIsolateContext context) {
     HandledIsolateMessenger msg =
         HandledIsolateMessenger(remotePort: context.messenger);
-    HandledIsolateMessenger data =
-        HandledIsolateMessenger(remotePort: context.dataChannel);
 
     context.messenger.send(msg.inPort.sendPort);
-    context.dataChannel.send(data.inPort.sendPort);
-
-    IsolateServicesBinding.ensureInitialized();
-
-    // Set up mock message handler to intercept calls to channel within isolate
-    // and run them by the main isolate.
-    context.channels?.forEach((channel) {
-      ServicesBinding.instance.defaultBinaryMessenger
-          .setMockMessageHandler(channel.name, (ByteData message) async {
-        data.send(
-            HandledIsolateChannelMessage(channel.name, message, context.name));
-        return await data.broadcast.first;
-      });
-    });
 
     return msg;
   }
@@ -212,8 +180,8 @@ class HandledIsolate<T> {
       SendPort onError,
       String debugName}) async {
     assert(function != null);
-    final message = HandledIsolateContext(
-        messenger.outPort, dataChannel.outPort, _channels, name);
+    final message =
+        HandledIsolateContext(messenger.outPort, name);
     _isolate = await Isolate.spawn(function, message,
         paused: paused,
         errorsAreFatal: errorsAreFatal,
@@ -284,6 +252,5 @@ class HandledIsolate<T> {
     _isolate = null;
 
     _messenger.dispose();
-    _dataChannel.dispose();
   }
 }

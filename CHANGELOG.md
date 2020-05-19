@@ -1,3 +1,8 @@
+## [0.2.0-alpha1] - 2020-05-18
+
+* **BREAKING CHANGE**: Removed support for calls to native code through
+`MethodChannel`.
+
 ## [0.1.2+hotfix2] - 2020-05-18
 
 * Added `ServicesBinding` mixin dependency `SchedulerBinding`. This is required since Flutter [#54286](https://github.com/flutter/flutter/pull/54286).
