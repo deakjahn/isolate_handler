@@ -1,3 +1,7 @@
+## [0.2.0+hotfix2] - 2020-05-19
+
+* Changelog fix.
+
 ## [0.2.0-hotfix1] - 2020-05-19
 
 * Pubspec and format fix.
