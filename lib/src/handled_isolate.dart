@@ -1,7 +1,5 @@
 import 'dart:isolate';
 
-import 'package:flutter/services.dart';
-
 import 'handled_isolate_context.dart';
 import 'handled_isolate_messenger.dart';
 
@@ -121,6 +119,7 @@ class HandledIsolate<T> {
   ///
   /// Returns main communication channel.
   static HandledIsolateMessenger initialize(
+
       /// Context to which connection should be established.
       HandledIsolateContext context) {
     HandledIsolateMessenger msg =
@@ -180,8 +179,7 @@ class HandledIsolate<T> {
       SendPort onError,
       String debugName}) async {
     assert(function != null);
-    final message =
-        HandledIsolateContext(messenger.outPort, name);
+    final message = HandledIsolateContext(messenger.outPort, name);
     _isolate = await Isolate.spawn(function, message,
         paused: paused,
         errorsAreFatal: errorsAreFatal,

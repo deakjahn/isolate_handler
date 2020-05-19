@@ -80,8 +80,6 @@ export 'src/handled_isolate_context.dart';
 
 import 'dart:isolate';
 
-import 'package:flutter/services.dart';
-
 import 'src/handled_isolate.dart';
 import 'src/handled_isolate_context.dart';
 
@@ -175,9 +173,7 @@ class IsolateHandler {
     }
 
     isolates[name] = HandledIsolate<T>(
-        name: name,
-        function: function,
-        onInitialized: onInitialized);
+        name: name, function: function, onInitialized: onInitialized);
 
     isolates[name].messenger.listen((dynamic message) {
       if (onReceive != null) {

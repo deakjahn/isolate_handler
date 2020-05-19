@@ -1,6 +1,7 @@
 # Isolate Handler
 
-Effortless isolates abstraction layer.
+Effortless isolates abstraction layer with support for inter-isolate
+communication.
 
 ## Getting Started
 

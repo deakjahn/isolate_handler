@@ -1,4 +1,13 @@
-## [0.2.0-alpha1] - 2020-05-18
+## [0.2.0-hotfix1] - 2020-05-19
+
+* Pubspec and format fix.
+
+## [0.2.0] - 2020-05-19
+
+* Out of alpha.
+* Pubspec and format fix.
+
+## [0.2.0-alpha1] - 2020-05-19
 
 * **BREAKING CHANGE**: Removed support for calls to native code through
 `MethodChannel`.

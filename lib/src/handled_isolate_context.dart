@@ -1,7 +1,5 @@
 import 'dart:isolate';
 
-import 'package:flutter/services.dart';
-
 /// Context of [HandledIsolate].
 ///
 /// Used to establish communication between isolates.
@@ -19,6 +17,7 @@ class HandledIsolateContext {
   ///
   /// Throws if either `messenger` or `dataChannel` is null.
   HandledIsolateContext(
+
       /// Listening [SendPort] of [HandledIsolate], ready to accept a new
       /// `sendPort`. Used for free communications. Must not be null.
       this.messenger,
