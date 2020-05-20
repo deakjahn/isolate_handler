@@ -24,7 +24,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-// let's create a new IsolateHandler instance. This is what we will use
+// Let's create a new IsolateHandler instance. This is what we will use
 // to spawn isolates.
   final isolates = IsolateHandler();
 
