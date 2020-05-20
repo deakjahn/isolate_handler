@@ -1,18 +1,20 @@
 import 'dart:isolate';
 
-import 'handled_isolate_context.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_isolate/flutter_isolate.dart';
+
 import 'handled_isolate_messenger.dart';
 
-/// Instance of [Isolate] handled by [HandledIsolate].
+/// Instance of [FlutterIsolate] handled by [HandledIsolate].
 class HandledIsolate<T> {
   HandledIsolateMessenger _messenger;
-  Isolate _isolate;
+  FlutterIsolate _isolate;
   String _name;
 
-  /// Instance of Dart [Isolate] handled by this instance.
+  /// Instance of Dart [FlutterIsolate] handled by this instance.
   ///
   /// Must be initialized by a call to constructor before use.
-  Isolate get isolate => _isolate;
+  FlutterIsolate get isolate => _isolate;
 
   /// Capability granting the ability to pause the isolate.
   ///
@@ -38,7 +40,7 @@ class HandledIsolate<T> {
   ///
   /// The argument [function] specifies the initial function to call in the
   /// spawned isolate. The entry-point function is invoked in the new isolate
-  /// with [HandledIsolateContext] as the only argument.
+  /// with [SendPort] as the only argument.
   ///
   /// The function must be a top-level function or a static method that can be
   /// called with a single argument, that is, a compile-time constant function
@@ -61,7 +63,7 @@ class HandledIsolate<T> {
   ///
   /// If the [paused] parameter is set to `true`, the isolate will start up in
   /// a paused state, just before calling the [function] function with the
-  /// [HandledIsolateContext], as if by an initial call of
+  /// [SendPort], as if by an initial call of
   /// `isolate.pause(isolate.pauseCapability)`. To resume the isolate,
   /// call `isolate.resume(isolate.pauseCapability)`.
   ///
@@ -87,55 +89,31 @@ class HandledIsolate<T> {
   /// Throws if `name` is not unique or `function` is null.
   ///
   /// Returns spawned [HandledIsolate] instance.
-  HandledIsolate(
-      {String name,
-      void Function(HandledIsolateContext) function,
-      void Function() onInitialized,
-      bool paused: false,
-      bool errorsAreFatal,
-      SendPort onExit,
-      SendPort onError,
-      String debugName}) {
+  HandledIsolate({@required String name, @required void Function(SendPort) function, void Function() onInitialized, bool paused = false, bool errorsAreFatal, SendPort onExit, SendPort onError, String debugName}) {
     assert(name != null);
     assert(function != null);
 
     _name = name;
-    _messenger =
-        messenger ?? HandledIsolateMessenger(onInitialized: onInitialized);
+    _messenger = messenger ?? HandledIsolateMessenger(onInitialized: onInitialized);
 
-    _init(function,
-        paused: paused,
-        errorsAreFatal: errorsAreFatal,
-        onExit: onExit,
-        onError: onError,
-        debugName: debugName);
+    _init(function, paused: paused, errorsAreFatal: errorsAreFatal, onExit: onExit, onError: onError, debugName: debugName);
   }
 
   /// Establishes communication channels between this instance and `context`.
   ///
-  /// Subscribes to passed channels by setting up mock message handler to
-  /// intercept calls to channel within isolate. Passes them to the main
-  /// isolate to be handled there.
-  ///
   /// Returns main communication channel.
-  static HandledIsolateMessenger initialize(
-
-      /// Context to which connection should be established.
-      HandledIsolateContext context) {
-    HandledIsolateMessenger msg =
-        HandledIsolateMessenger(remotePort: context.messenger);
-
-    context.messenger.send(msg.inPort.sendPort);
-
+  static HandledIsolateMessenger initialize(SendPort context) {
+    HandledIsolateMessenger msg = HandledIsolateMessenger(remotePort: context);
+    context.send(msg.inPort.sendPort);
     return msg;
   }
 
-  /// Creates a [HandledIsolateContext] for this handled isolate, then spawns
-  /// and returns the [Isolate].
+  /// Creates a [SendPort] for this handled isolate, then spawns
+  /// and returns the [FlutterIsolate].
   ///
   /// The argument [function] specifies the initial function to call in the
   /// spawned isolate. The entry-point function is invoked in the new isolate
-  /// with [HandledIsolateContext] as the only argument.
+  /// with [SendPort] as the only argument.
   ///
   /// The function must be a top-level function or a static method that can be
   /// called with a single argument, that is, a compile-time constant function
@@ -148,7 +126,7 @@ class HandledIsolate<T> {
   ///
   /// If the [paused] parameter is set to `true`, the isolate will start up in
   /// a paused state, just before calling the [function] function with the
-  /// [HandledIsolateContext], as if by an initial call of
+  /// [SendPort], as if by an initial call of
   /// `isolate.pause(isolate.pauseCapability)`. To resume the isolate,
   /// call `isolate.resume(isolate.pauseCapability)`.
   ///
@@ -172,20 +150,14 @@ class HandledIsolate<T> {
 
       /// Entry point of the [Isolate]. Must be a top-level or static function.
       /// Passed to constructor. May not be null.
-      Function(HandledIsolateContext) function,
-      {bool paused: false,
+      Function(SendPort) function,
+      {bool paused = false,
       bool errorsAreFatal,
       SendPort onExit,
       SendPort onError,
       String debugName}) async {
     assert(function != null);
-    final message = HandledIsolateContext(messenger.outPort, name);
-    _isolate = await Isolate.spawn(function, message,
-        paused: paused,
-        errorsAreFatal: errorsAreFatal,
-        onExit: onExit,
-        onError: onError,
-        debugName: debugName);
+    _isolate = await FlutterIsolate.spawn(function, messenger.outPort);
   }
 
   /// Requests the isolate to pause.
@@ -219,8 +191,8 @@ class HandledIsolate<T> {
   /// If [pauseCapability] is `null`, or it's not the pause capability
   /// of the isolate identified by [controlPort],
   /// the pause request is ignored by the receiving isolate.
-  Capability pause([Capability resumeCapability]) {
-    return isolate.pause(resumeCapability);
+  void pause([Capability resumeCapability]) {
+    isolate.pause();
   }
 
   /// Resumes a paused isolate.
@@ -235,7 +207,7 @@ class HandledIsolate<T> {
   /// to pause the isolate, or it has already been used to resume from
   /// that pause, the resume call has no effect.
   void resume([Capability resumeCapability]) {
-    isolate.resume(resumeCapability);
+    isolate.resume();
   }
 
   /// Disposes of the [Isolate] instance.
@@ -246,7 +218,7 @@ class HandledIsolate<T> {
   void dispose() {
     assert(isolate != null);
 
-    _isolate.kill(priority: Isolate.immediate);
+    _isolate.kill();
     _isolate = null;
 
     _messenger.dispose();
