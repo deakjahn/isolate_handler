@@ -89,7 +89,16 @@ class HandledIsolate<T> {
   /// Throws if `name` is not unique or `function` is null.
   ///
   /// Returns spawned [HandledIsolate] instance.
-  HandledIsolate({@required String name, @required void Function(SendPort) function, void Function() onInitialized, bool paused = false, bool errorsAreFatal, SendPort onExit, SendPort onError, String debugName}) {
+  HandledIsolate({
+    @required String name,
+    @required void Function(SendPort) function,
+    void Function() onInitialized,
+    bool paused = false,
+    bool errorsAreFatal,
+    SendPort onExit,
+    SendPort onError,
+    String debugName,
+  }) {
     assert(name != null);
     assert(function != null);
 
