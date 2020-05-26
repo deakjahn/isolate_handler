@@ -112,7 +112,7 @@ the platform channel so that the isolates can call platform plugins.
 
 This solution is mostly transparent but it results in two changes. First, as it can be seen
 in the code above, the parameter passed to the `entryPoint()` function changed type.
-It was a `HandledIsolateContext` earlier but now it is a `SendPort`.
+It was a `HandledIsolateContext` earlier but it is a `SendPort` now.
 
 The second change pertains to the way external plugins are called from the isolates.
 There is no need for any setup now, just call the plugin just like you would call
