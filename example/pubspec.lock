@@ -94,7 +94,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.2.0+hotfix2"
+    version: "0.3.0"
   matcher:
     dependency: transitive
     description:
@@ -117,19 +117,19 @@ packages:
     source: hosted
     version: "1.6.4"
   path_provider:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: path_provider
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.6.8"
+    version: "1.6.9"
   path_provider_macos:
     dependency: transitive
     description:
       name: path_provider_macos
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.4+2"
+    version: "0.0.4+3"
   path_provider_platform_interface:
     dependency: transitive
     description:
