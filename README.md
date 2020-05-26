@@ -110,8 +110,8 @@ communication channel cannot be used any more. From now on, this package depends
 on https://pub.dev/packages/flutter_isolate to use an alternative method to establish
 the platform channel so that the isolates can call platform plugins.
 
-This solution is mostly transparent but it results in two changes. First, as it can be seen
-in the code above, the parameter passed to the `entryPoint()` function changed type.
+This solution is mostly transparent but it results in two changes. First, as it can be
+seen in the code above, the parameter passed to the `entryPoint()` function changed type.
 It was a `HandledIsolateContext` earlier but it is a `SendPort` now.
 
 The second change pertains to the way external plugins are called from the isolates.
