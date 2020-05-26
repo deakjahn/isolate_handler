@@ -1,7 +1,8 @@
 # Isolate Handler
 
 Effortless isolates abstraction layer with support for inter-isolate
-communication.
+communication. These isolates (unlike the standard ones in Flutter)
+*can* call platform plugins.
 
 ## Getting Started
 
@@ -32,6 +33,10 @@ communication between—isolates.
 Dart already has a very clean interface for spawning and interacting
 with isolates, using Isolate Handler instead of the regular interface only
 provides a slightly simpler way of keeping track of and communicating with them.
+Besides, it allows the isolates to call platform plugins, overcoming a limitation
+of the original ones (platform plugins use platform channels for communication
+between the Dart and the hative sides and stock isolates don't set up the
+necessary UI engine that the platform channels rely on).
 
 ## Using Isolate Handler
 
@@ -83,7 +88,7 @@ void setCounter(int count) {
 }
 
 // This function happens in the isolate.
-void entryPoint(HandledIsolateContext context) {
+void entryPoint(SendPort context) {
   // Calling initialize from the entry point with the context is
   // required if communication is desired. It returns a messenger which
   // allows listening and sending information to the main isolate.
@@ -98,14 +103,22 @@ void entryPoint(HandledIsolateContext context) {
 }
 ```
 
-### Calls to `invokeMethod` from isolates
+## Breaking changes from 0.2.0
 
-This was previously supported, but support has been removed due to changes in
-Flutter making it infeasible.
+Due to a change in the Flutter framework, the previously used method to set up an extra
+communication channel cannot be used any more. From now on, this package depends
+on https://pub.dev/packages/flutter_isolate to use an alternative method to establish
+the platform channel so that the isolates can call platform plugins.
+
+This solution is mostly transparent but it results in two changes. First, as it can be seen
+in the code above, the parameter passed to the `entryPoint()` function changed type.
+It was a `HandledIsolateContext` earlier but now it is a `SendPort`.
+
+The second change pertains to the way external plugins are called from the isolates.
+There is no need for any setup now, just call the plugin just like you would call
+it from the main thread. See the `example` subproject for a sample.
 
 It is worth noting that running native plugins from a Dart isolate does not
-offer any performance advantage as all native code is run on the main (UI)
-thread by default.
-
-In order to improve performance of a native plugin, the plugin must create its
-own thread on the native platform.
+offer any real performance advantage as all native code is run on the main (UI)
+thread by default. Your UI and main thread can be much more responsive if you
+use it properly but you cannot expect the platform channel calls to run in parallel.
