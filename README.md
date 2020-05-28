@@ -34,9 +34,35 @@ Dart already has a very clean interface for spawning and interacting
 with isolates, using Isolate Handler instead of the regular interface only
 provides a slightly simpler way of keeping track of and communicating with them.
 Besides, it allows the isolates to call platform plugins, overcoming a limitation
-of the original ones (platform plugins use platform channels for communication
-between the Dart and the hative sides and stock isolates don't set up the
-necessary UI engine that the platform channels rely on).
+of the original ones.
+
+Plugins in [Flutter parlance](https://flutter.dev/docs/development/packages-and-plugins/developing-packages)) mean
+packages that contain native code. When you depend on something in your `pubspec.yaml` file,
+that might be either a package (containing Dart code only) or a plugin (containing platform code,
+usually Android and iOS, maybe even more).
+ 
+Plugins use a mechanism called platform channel to communicate between the Dart and the native sides,
+a message passing mechanism using the `MethodChannel` type. This mechanism depends on elements
+of the underlying UI engine to function. Standard isolates don't have that underlying engine because
+it's not something they normally need but this means that any call to a plugin (eg. to something as simple
+as [path_provider](https://pub.dev/packages/path_provider)) will fail.
+
+The `FlutterIsolate` type used by this package, however, does set up that mechanism (technically by
+creating a background view on the platform side) so that calls to plugins go through completely transparently,
+without any code modification at all: just call as you would normally call from your main thread code.
+
+It is worth noting, however, that running native plugins from a Dart isolate does not
+offer any real performance advantage as all native code is run on the main (UI)
+thread by default. In simple terms, using an isolate (unlike `async/await` itself)
+will create parallel execution on a different thread. But as soon as you call a plugin from that isolate,
+the platform side of that plugin will run on the UI thread again. Calling a plugin from an isolate
+*will not* create a new thread on the native platform: only the Dart code will enjoy the benefits,
+not the native part.
+
+If your tasks are computationally intensive on the Dart side, isolates will help a lot.
+If the time is spent in the plugin native side, you won't gain much unless you create your
+own native threads on the native side, in the plugin itself. There is nothing you can do about it
+in your main Dart app.
 
 ## Using Isolate Handler
 
@@ -107,18 +133,13 @@ void entryPoint(SendPort context) {
 
 Due to a change in the Flutter framework, the previously used method to set up an extra
 communication channel cannot be used any more. From now on, this package depends
-on https://pub.dev/packages/flutter_isolate to use an alternative method to establish
+on [flutter_isolate](https://pub.dev/packages/flutter_isolate) to use an alternative method to establish
 the platform channel so that the isolates can call platform plugins.
 
-This solution is mostly transparent but it results in two changes. First, as it can be seen
-in the code above, the parameter passed to the `entryPoint()` function changed type.
-It was a `HandledIsolateContext` earlier but now it is a `SendPort`.
+This solution is mostly transparent but it results in two changes. First, as it can be
+seen in the code above, the parameter passed to the `entryPoint()` function changed type.
+It was a `HandledIsolateContext` earlier but it is a `SendPort` now.
 
 The second change pertains to the way external plugins are called from the isolates.
 There is no need for any setup now, just call the plugin just like you would call
 it from the main thread. See the `example` subproject for a sample.
-
-It is worth noting that running native plugins from a Dart isolate does not
-offer any real performance advantage as all native code is run on the main (UI)
-thread by default. Your UI and main thread can be much more responsive if you
-use it properly but you cannot expect the platform channel calls to run in parallel.
