@@ -36,7 +36,7 @@ provides a slightly simpler way of keeping track of and communicating with them.
 Besides, it allows the isolates to call platform plugins, overcoming a limitation
 of the original ones.
 
-Plugins in [Flutter parlance](https://flutter.dev/docs/development/packages-and-plugins/developing-packages)) mean
+Plugins in [Flutter parlance](https://flutter.dev/docs/development/packages-and-plugins/developing-packages) mean
 packages that contain native code. When you depend on something in your `pubspec.yaml` file,
 that might be either a package (containing Dart code only) or a plugin (containing platform code,
 usually Android and iOS, maybe even more).
@@ -56,8 +56,8 @@ offer any real performance advantage as all native code is run on the main (UI)
 thread by default. In simple terms, using an isolate (unlike `async/await` itself)
 will create parallel execution on a different thread. But as soon as you call a plugin from that isolate,
 the platform side of that plugin will run on the UI thread again. Calling a plugin from an isolate
-*will not* create a new thread on the native platform: only the Dart code will enjoy the benefits,
-not the native part.
+instead of the main app *will not* create a new thread on the native platform: only the Dart code
+will enjoy the benefits, not the native part.
 
 If your tasks are computationally intensive on the Dart side, isolates will help a lot.
 If the time is spent in the plugin native side, you won't gain much unless you create your
