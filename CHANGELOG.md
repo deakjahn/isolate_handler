@@ -1,3 +1,11 @@
+## [0.3.0] - 2020-05-26
+
+* New package maintainer.
+
+* Breaking changes! Due to a change in the Flutter framework, the previously used method to set up an extra
+communication channel cannot be used any more. From now on, this package depends on https://pub.dev/packages/flutter_isolate
+that uses an alternative method to establish the platform channel so that the isolates can call platform plugins. See README. 
+
 ## [0.2.0+hotfix2] - 2020-05-19
 
 * Changelog fix.
