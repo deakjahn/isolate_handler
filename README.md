@@ -20,8 +20,7 @@ This means that you can use isolates to execute code you want to run
 alongside your main thread, which is particularly useful for keeping
 your Flutter application running smoothly.
 
-For more detailed information, please
-[read this excellent article](https://www.didierboelens.com/2019/01/futures---isolates---event-loop/) 
+For more detailed information, please [read this excellent article](https://www.didierboelens.com/2019/01/futures---isolates---event-loop/) 
 by Didier Boelens.
 
 #### Why should I use Isolate Handler?
