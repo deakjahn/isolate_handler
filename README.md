@@ -6,7 +6,7 @@ communication. These isolates (unlike the standard ones in Flutter)
 
 ## Getting Started
 
-#### What's an isolate?
+### What's an isolate?
 
 In the words of the [Dart documentation](https://api.dartlang.org/stable/2.4.1/dart-isolate/dart-isolate-library.html) 
 itself, isolates are:
@@ -24,7 +24,7 @@ your Flutter application running smoothly.
 For more detailed information, please [read this excellent article](https://www.didierboelens.com/2019/01/futures---isolates---event-loop/) 
 by Didier Boelens.
 
-#### Why should I use Isolate Handler?
+### Why should I use Isolate Handler?
 
 **Short answer**: Isolate Handler allows easy spawning of—as well as
 communication between—isolates.
