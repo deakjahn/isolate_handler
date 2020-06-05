@@ -159,7 +159,7 @@ class IsolateHandler {
   /// Throws if `name` is not unique or `function` is null.
   ///
   /// Returns spawned [HandledIsolate] instance.
-  HandledIsolate spawn<T>(void Function(SendPort) function, {String name, void Function(T message) onReceive, void Function() onInitialized, bool paused = false, bool errorsAreFatal, SendPort onExit, SendPort onError, String debugName}) {
+  HandledIsolate spawn<T>(void Function(Map<String, dynamic>) function, {String name, void Function(T message) onReceive, void Function() onInitialized, bool paused = false, bool errorsAreFatal, SendPort onExit, SendPort onError, String debugName}) {
     assert(function != null);
     assert(name == null || !isolates.containsKey(name));
 

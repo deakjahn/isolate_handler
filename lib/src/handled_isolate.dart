@@ -40,7 +40,7 @@ class HandledIsolate<T> {
   ///
   /// The argument [function] specifies the initial function to call in the
   /// spawned isolate. The entry-point function is invoked in the new isolate
-  /// with [SendPort] as the only argument.
+  /// with [context] as the only argument.
   ///
   /// The function must be a top-level function or a static method that can be
   /// called with a single argument, that is, a compile-time constant function
@@ -63,7 +63,7 @@ class HandledIsolate<T> {
   ///
   /// If the [paused] parameter is set to `true`, the isolate will start up in
   /// a paused state, just before calling the [function] function with the
-  /// [SendPort], as if by an initial call of
+  /// [context], as if by an initial call of
   /// `isolate.pause(isolate.pauseCapability)`. To resume the isolate,
   /// call `isolate.resume(isolate.pauseCapability)`.
   ///
@@ -91,7 +91,7 @@ class HandledIsolate<T> {
   /// Returns spawned [HandledIsolate] instance.
   HandledIsolate({
     @required String name,
-    @required void Function(SendPort) function,
+    @required void Function(Map<String, dynamic>) function,
     void Function() onInitialized,
     bool paused = false,
     bool errorsAreFatal,
@@ -111,18 +111,19 @@ class HandledIsolate<T> {
   /// Establishes communication channels between this instance and `context`.
   ///
   /// Returns main communication channel.
-  static HandledIsolateMessenger initialize(SendPort context) {
-    HandledIsolateMessenger msg = HandledIsolateMessenger(remotePort: context);
-    context.send(msg.inPort.sendPort);
+  static HandledIsolateMessenger initialize(Map<String, dynamic> context) {
+    final messenger = context['messenger'] as SendPort;
+    HandledIsolateMessenger msg = HandledIsolateMessenger(remotePort: messenger);
+    messenger.send(msg.inPort.sendPort);
     return msg;
   }
 
-  /// Creates a [SendPort] for this handled isolate, then spawns
+  /// Creates a [HandledIsolateContext] for this handled isolate, then spawns
   /// and returns the [FlutterIsolate].
   ///
   /// The argument [function] specifies the initial function to call in the
   /// spawned isolate. The entry-point function is invoked in the new isolate
-  /// with [SendPort] as the only argument.
+  /// with [HandledIsolateContext] as the only argument.
   ///
   /// The function must be a top-level function or a static method that can be
   /// called with a single argument, that is, a compile-time constant function
@@ -135,7 +136,7 @@ class HandledIsolate<T> {
   ///
   /// If the [paused] parameter is set to `true`, the isolate will start up in
   /// a paused state, just before calling the [function] function with the
-  /// [SendPort], as if by an initial call of
+  /// [HandledIsolateContext], as if by an initial call of
   /// `isolate.pause(isolate.pauseCapability)`. To resume the isolate,
   /// call `isolate.resume(isolate.pauseCapability)`.
   ///
@@ -159,14 +160,18 @@ class HandledIsolate<T> {
 
       /// Entry point of the [Isolate]. Must be a top-level or static function.
       /// Passed to constructor. May not be null.
-      Function(SendPort) function,
+      Function(Map<String, dynamic>) function,
       {bool paused = false,
       bool errorsAreFatal,
       SendPort onExit,
       SendPort onError,
       String debugName}) async {
     assert(function != null);
-    _isolate = await FlutterIsolate.spawn(function, messenger.outPort);
+    final message = {
+      'messenger': messenger.outPort,
+      'name': name,
+    };
+    _isolate = await FlutterIsolate.spawn(function, message);
   }
 
   /// Requests the isolate to pause.

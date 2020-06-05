@@ -113,7 +113,7 @@ void setCounter(int count) {
 }
 
 // This function happens in the isolate.
-void entryPoint(SendPort context) {
+void entryPoint(Map<String, dynamic> context) {
   // Calling initialize from the entry point with the context is
   // required if communication is desired. It returns a messenger which
   // allows listening and sending information to the main isolate.
@@ -137,7 +137,9 @@ the platform channel so that the isolates can call platform plugins.
 
 This solution is mostly transparent but it results in two changes. First, as it can be
 seen in the code above, the parameter passed to the `entryPoint()` function changed type.
-It was a `HandledIsolateContext` earlier but it is a `SendPort` now.
+It was a `HandledIsolateContext` earlier but it is a `Map<String, dynamic>` now.
+It still has the same two elements as before, 'messenger' (a `SendPort`) and 'name'
+(a `String`).
 
 The second change pertains to the way external plugins are called from the isolates.
 There is no need for any setup now, just call the plugin just like you would call
