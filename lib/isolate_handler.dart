@@ -102,7 +102,7 @@ class IsolateHandler {
   ///
   /// The argument [function] specifies the initial function to call in the
   /// spawned isolate. The entry-point function is invoked in the new isolate
-  /// with [SendPort] as the only argument.
+  /// with [context] as the only argument.
   ///
   /// The function must be a top-level function or a static method that can be
   /// called with a single argument, that is, a compile-time constant function
@@ -133,7 +133,7 @@ class IsolateHandler {
   ///
   /// If the [paused] parameter is set to `true`, the isolate will start up in
   /// a paused state, just before calling the [function] function with the
-  /// [SendPort], as if by an initial call of
+  /// [context], as if by an initial call of
   /// `isolate.pause(isolate.pauseCapability)`. To resume the isolate,
   /// call `isolate.resume(isolate.pauseCapability)`.
   ///
