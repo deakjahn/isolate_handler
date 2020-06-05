@@ -118,12 +118,12 @@ class HandledIsolate<T> {
     return msg;
   }
 
-  /// Creates a [HandledIsolateContext] for this handled isolate, then spawns
+  /// Creates a [context] for this handled isolate, then spawns
   /// and returns the [FlutterIsolate].
   ///
   /// The argument [function] specifies the initial function to call in the
   /// spawned isolate. The entry-point function is invoked in the new isolate
-  /// with [HandledIsolateContext] as the only argument.
+  /// with [context] as the only argument.
   ///
   /// The function must be a top-level function or a static method that can be
   /// called with a single argument, that is, a compile-time constant function
@@ -136,7 +136,7 @@ class HandledIsolate<T> {
   ///
   /// If the [paused] parameter is set to `true`, the isolate will start up in
   /// a paused state, just before calling the [function] function with the
-  /// [HandledIsolateContext], as if by an initial call of
+  /// [context], as if by an initial call of
   /// `isolate.pause(isolate.pauseCapability)`. To resume the isolate,
   /// call `isolate.resume(isolate.pauseCapability)`.
   ///

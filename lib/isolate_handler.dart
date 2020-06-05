@@ -59,7 +59,7 @@
 /// }
 ///
 /// // This function happens in the isolate.
-/// void entryPoint(SendPort context) {
+/// void entryPoint(Map<String, dynamic> context) {
 ///   // Calling initialize from the entry point with the context is
 ///   // required if communication is desired. It returns a messenger which
 ///   // allows listening and sending information to the main isolate.
