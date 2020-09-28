@@ -113,6 +113,8 @@ void setCounter(int count) {
 }
 
 // This function happens in the isolate.
+// Important: Entrypoint either should either be at the root or static
+// function. Otherwise it will throw an exception. 
 void entryPoint(Map<String, dynamic> context) {
   // Calling initialize from the entry point with the context is
   // required if communication is desired. It returns a messenger which
