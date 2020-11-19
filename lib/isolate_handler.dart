@@ -89,7 +89,7 @@ export 'src/handled_isolate_messenger.dart';
 /// High-level interface for spawning, interacting with and destroying
 /// [FlutterIsolate] instances.
 class IsolateHandler {
-  final Map<String, HandledIsolate> _isolates = {};
+  final _isolates = <String, HandledIsolate>{};
   int _uid = 0;
 
   IsolateHandler();
@@ -98,7 +98,11 @@ class IsolateHandler {
   Map<String, HandledIsolate> get isolates => _isolates;
 
   /// Spawns a new [HandledIsolate] of type `T` (`dynamic` by default) with an
-  /// entry point of `function`.
+  /// entry point of `function`. Note that because of the limitations of the
+  /// underlying messaging mechanism of `SendPort.send()`, the list of
+  /// allowed types is limited: "The content of message can be: primitive values
+  /// (null, num, bool, double, String), instances of SendPort, and lists and maps
+  /// whose elements are any of these. List and maps are also allowed to be cyclic."
   ///
   /// The argument [function] specifies the initial function to call in the
   /// spawned isolate. The entry-point function is invoked in the new isolate
@@ -165,13 +169,7 @@ class IsolateHandler {
 
     name ??= '__anonymous_${_uid++}';
     isolates[name] = HandledIsolate<T>(name: name, function: function, onInitialized: onInitialized);
-
-    isolates[name].messenger.listen((dynamic message) {
-      if (onReceive != null) {
-        onReceive(message);
-      }
-    });
-
+    isolates[name].messenger.listen((dynamic message) => onReceive?.call(message));
     return isolates[name];
   }
 

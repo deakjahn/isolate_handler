@@ -113,7 +113,7 @@ class HandledIsolate<T> {
   /// Returns main communication channel.
   static HandledIsolateMessenger initialize(Map<String, dynamic> context) {
     final messenger = context['messenger'] as SendPort;
-    HandledIsolateMessenger msg = HandledIsolateMessenger(remotePort: messenger);
+    final msg = HandledIsolateMessenger(remotePort: messenger);
     messenger.send(msg.inPort.sendPort);
     return msg;
   }

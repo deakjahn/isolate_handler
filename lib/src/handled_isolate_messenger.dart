@@ -36,9 +36,7 @@ class HandledIsolateMessenger<T> {
   /// If `remotePort` is set, connects this instance's `outPort` to it.
   HandledIsolateMessenger({SendPort remotePort, void Function() onInitialized}) : _onEstablishedConnection = onInitialized {
     _broadcast = _port.asBroadcastStream();
-    if (remotePort != null) {
-      connectTo(remotePort);
-    }
+    if (remotePort != null) connectTo(remotePort);
   }
 
   /// Connect this instance to the given [SendPort].
@@ -50,18 +48,12 @@ class HandledIsolateMessenger<T> {
   void connectTo(SendPort sendPort) {
     assert(sendPort != null);
     _sendPortOverride = sendPort;
-
-    if (_onEstablishedConnection != null) {
-      _onEstablishedConnection();
-    }
-
+    _onEstablishedConnection?.call();
     _connectionEstablished = true;
   }
 
   /// Send a message to the connected [HandledIsolate] instance.
-  void send(T message) {
-    outPort.send(message);
-  }
+  void send(T message) => outPort.send(message);
 
   /// Intermediary message handler.
   ///
