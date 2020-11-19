@@ -53,7 +53,7 @@ android {
     targetCompatibility JavaVersion.VERSION_1_8
   }
 
-  ndkVersion '21.2.6472646'
+  ndkVersion '21.3.6528147'
 }
 
 flutter {
