@@ -77,8 +77,6 @@ library isolate_handler;
 
 import 'dart:isolate';
 
-import 'package:flutter/foundation.dart';
-
 import 'src/handled_isolate.dart';
 
 export 'src/handled_isolate.dart';
@@ -160,17 +158,26 @@ class IsolateHandler {
   ///
   /// Isolates need to be disposed of using `kill` when done using them.
   ///
-  /// Throws if `name` is not unique or `function` is null.
+  /// Throws if `name` is not unique.
   ///
   /// Returns spawned [HandledIsolate] instance.
-  HandledIsolate spawn<T>(void Function(Map<String, dynamic>) function, {String name, void Function(T message) onReceive, void Function() onInitialized, bool paused = false, bool errorsAreFatal, SendPort onExit, SendPort onError, String debugName}) {
-    assert(function != null);
+  HandledIsolate spawn<T>(
+    void Function(Map<String, dynamic>) function, {
+    String? name,
+    void Function(T message)? onReceive,
+    void Function()? onInitialized,
+    bool paused = false,
+    bool? errorsAreFatal,
+    SendPort? onExit,
+    SendPort? onError,
+    String? debugName,
+  }) {
     assert(name == null || !isolates.containsKey(name));
 
     name ??= '__anonymous_${_uid++}';
     isolates[name] = HandledIsolate<T>(name: name, function: function, onInitialized: onInitialized);
-    isolates[name].messenger.listen((dynamic message) => onReceive?.call(message));
-    return isolates[name];
+    isolates[name]!.messenger.listen((dynamic message) => onReceive?.call(message));
+    return isolates[name]!;
   }
 
   /// Send message to a spawned isolate.
@@ -182,13 +189,13 @@ class IsolateHandler {
   /// or a [HandledIsolate] returned by the `spawn` function. May not be null.
   ///
   /// Throws if `to` or `message` are null.
-  void send(dynamic message, {@required dynamic to}) {
+  void send(dynamic message, {required dynamic to}) {
     assert(to != null);
     assert(message != null);
 
     if (to is String) {
       assert(isolates.containsKey(to));
-      isolates[to].messenger.send(message);
+      isolates[to]!.messenger.send(message);
     } else if (to is HandledIsolate) {
       to.messenger.send(message);
     } else {
@@ -199,11 +206,7 @@ class IsolateHandler {
   /// Dispose of isolate.
   ///
   /// Takes name of isolate as given to `spawn`.
-  ///
-  /// Throws if `name` is `null`
   void kill(String name) {
-    assert(name != null);
-
     isolates[name]?.dispose();
     isolates.remove(name);
   }

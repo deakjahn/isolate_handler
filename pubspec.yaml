@@ -1,20 +1,20 @@
 name: isolate_handler
 description: Effortless isolates abstraction layer with support for inter-isolate communication.
-version: 0.3.1
+version: 0.3.1-nullsafety.0
 homepage: https://github.com/deakjahn/isolate_handler
 documentation: https://github.com/deakjahn/isolate_handler/blob/0.2.0/README.md
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  flutter_isolate: ^1.0.0+13
+  flutter_isolate: ^2.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  pedantic: ^1.9.0
+  pedantic: ^1.11.0
