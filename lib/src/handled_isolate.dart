@@ -34,8 +34,7 @@ class HandledIsolate<T> {
 
   /// Create a new instance of [HandledIsolate].
   ///
-  /// Spawns a new [HandledIsolate] of type `T` (`dynamic` by default) with an
-  /// entry point of `function`.
+  /// Spawns a new [HandledIsolate] with an entry point of `function`.
   ///
   /// The argument [function] specifies the initial function to call in the
   /// spawned isolate. The entry-point function is invoked in the new isolate

@@ -1,3 +1,9 @@
+# Changelog
+
+## [1.0.0] - 2021-03-07
+
+* Null safety
+
 ## [0.3.1] - 2020-06-05
 
 * Bringing back Context.
