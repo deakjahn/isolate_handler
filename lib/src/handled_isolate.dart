@@ -1,15 +1,14 @@
 import 'dart:isolate';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_isolate/flutter_isolate.dart';
 
 import 'handled_isolate_messenger.dart';
 
 /// Instance of [FlutterIsolate] handled by [HandledIsolate].
 class HandledIsolate<T> {
-  HandledIsolateMessenger _messenger;
-  FlutterIsolate _isolate;
-  String _name;
+  final HandledIsolateMessenger _messenger;
+  late final FlutterIsolate _isolate;
+  final String _name;
 
   /// Instance of Dart [FlutterIsolate] handled by this instance.
   ///
@@ -25,7 +24,7 @@ class HandledIsolate<T> {
   ///
   /// If the isolate is spawned in a paused state, use this capability as
   /// argument to the [resume] method in order to resume the paused isolate.
-  Capability get pauseCapability => isolate?.pauseCapability;
+  Capability? get pauseCapability => isolate.pauseCapability;
 
   /// Unique name used by [IsolateHandler] to identify isolate.
   String get name => _name;
@@ -86,26 +85,26 @@ class HandledIsolate<T> {
   ///
   /// Isolates need to be disposed of using `kill` when done using them.
   ///
-  /// Throws if `name` is not unique or `function` is null.
-  ///
   /// Returns spawned [HandledIsolate] instance.
   HandledIsolate({
-    @required String name,
-    @required void Function(Map<String, dynamic>) function,
-    void Function() onInitialized,
+    required String name,
+    required void Function(Map<String, dynamic>) function,
+    void Function()? onInitialized,
     bool paused = false,
-    bool errorsAreFatal,
-    SendPort onExit,
-    SendPort onError,
-    String debugName,
-  }) {
-    assert(name != null);
-    assert(function != null);
-
-    _name = name;
-    _messenger = messenger ?? HandledIsolateMessenger(onInitialized: onInitialized);
-
-    _init(function, paused: paused, errorsAreFatal: errorsAreFatal, onExit: onExit, onError: onError, debugName: debugName);
+    bool? errorsAreFatal,
+    SendPort? onExit,
+    SendPort? onError,
+    String? debugName,
+  })  : _messenger = HandledIsolateMessenger(onInitialized: onInitialized),
+        _name = name {
+    _init(
+      function,
+      paused: paused,
+      errorsAreFatal: errorsAreFatal,
+      onExit: onExit,
+      onError: onError,
+      debugName: debugName,
+    );
   }
 
   /// Establishes communication channels between this instance and `context`.
@@ -157,16 +156,15 @@ class HandledIsolate<T> {
   /// isolate was started as [paused], it may already have terminated before
   /// those methods can complete.
   void _init(
-
-      /// Entry point of the [Isolate]. Must be a top-level or static function.
-      /// Passed to constructor. May not be null.
-      Function(Map<String, dynamic>) function,
-      {bool paused = false,
-      bool errorsAreFatal,
-      SendPort onExit,
-      SendPort onError,
-      String debugName}) async {
-    assert(function != null);
+    /// Entry point of the [Isolate]. Must be a top-level or static function.
+    /// Passed to constructor. May not be null.
+    Function(Map<String, dynamic>) function, {
+    bool paused = false,
+    bool? errorsAreFatal,
+    SendPort? onExit,
+    SendPort? onError,
+    String? debugName,
+  }) async {
     final message = {
       'messenger': messenger.outPort,
       'name': name,
@@ -205,7 +203,7 @@ class HandledIsolate<T> {
   /// If [pauseCapability] is `null`, or it's not the pause capability
   /// of the isolate identified by [controlPort],
   /// the pause request is ignored by the receiving isolate.
-  void pause([Capability resumeCapability]) {
+  void pause([Capability? resumeCapability]) {
     isolate.pause();
   }
 
@@ -220,20 +218,15 @@ class HandledIsolate<T> {
   /// If the [resumeCapability] is not one that has previously been used
   /// to pause the isolate, or it has already been used to resume from
   /// that pause, the resume call has no effect.
-  void resume([Capability resumeCapability]) {
+  void resume([Capability? resumeCapability]) {
     isolate.resume();
   }
 
   /// Disposes of the [Isolate] instance.
   ///
   /// Kills isolate and disposes ports used for communication.
-  ///
-  /// Throws if `isolate` is null.
   void dispose() {
-    assert(isolate != null);
-
     _isolate.kill();
-    _isolate = null;
 
     _messenger.dispose();
   }

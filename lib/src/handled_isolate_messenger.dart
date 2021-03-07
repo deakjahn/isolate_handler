@@ -2,21 +2,21 @@ import 'dart:async';
 import 'dart:isolate';
 
 /// Communication channel for sending data between [HandledIsolate] instances.
-class HandledIsolateMessenger<T> {
+class HandledIsolateMessenger {
   /// Called in `connectTo` once `_sendPortOverride` has been set.
-  final void Function() _onEstablishedConnection;
+  final void Function()? _onEstablishedConnection;
 
   /// Messenger port used for communication between isolates.
   final ReceivePort _port = ReceivePort();
 
   /// Acts as preferred [SendPort] when set.
-  SendPort _sendPortOverride;
+  SendPort? _sendPortOverride;
 
   /// True after instance has traded `sendPort`s with another instance.
   bool _connectionEstablished = false;
 
   /// Broadcast stream of `inPort`.
-  Stream<T> _broadcast;
+  late Stream<dynamic> _broadcast;
 
   /// Port through which [HandledIsolateMessenger] receives data.
   ReceivePort get inPort => _port;
@@ -29,12 +29,15 @@ class HandledIsolateMessenger<T> {
   bool get connectionEstablished => _connectionEstablished;
 
   /// Broadcast stream of `inPort`.
-  Stream<T> get broadcast => _broadcast;
+  Stream<dynamic> get broadcast => _broadcast;
 
   /// Communication channel for sending data between [HandledIsolate] instances.
   ///
   /// If `remotePort` is set, connects this instance's `outPort` to it.
-  HandledIsolateMessenger({SendPort remotePort, void Function() onInitialized}) : _onEstablishedConnection = onInitialized {
+  HandledIsolateMessenger({
+    SendPort? remotePort,
+    void Function()? onInitialized,
+  }) : _onEstablishedConnection = onInitialized {
     _broadcast = _port.asBroadcastStream();
     if (remotePort != null) connectTo(remotePort);
   }
@@ -43,26 +46,20 @@ class HandledIsolateMessenger<T> {
   ///
   /// Overrides the default `outPort` of this messenger with the supplied one.
   /// Calls `_onEstablishedConnection` after port has been overridden.
-  ///
-  /// `sendPort` must not be null.
   void connectTo(SendPort sendPort) {
-    assert(sendPort != null);
     _sendPortOverride = sendPort;
     _onEstablishedConnection?.call();
     _connectionEstablished = true;
   }
 
   /// Send a message to the connected [HandledIsolate] instance.
-  void send(T message) => outPort.send(message);
+  void send(dynamic message) => outPort.send(message);
 
   /// Intermediary message handler.
   ///
   /// Listens for [SendPort] messages and intercepts them to establish
   /// connection to the sender. Otherwise passes the data on to `onData`.
-  ///
-  /// Throws if `onData` is null.
-  void _listenResponse(dynamic message, void Function(T) onData) {
-    assert(onData != null);
+  void _listenResponse(dynamic message, void Function(dynamic) onData) {
     if (_sendPortOverride == null && message is SendPort) {
       connectTo(message);
     } else {
@@ -78,7 +75,18 @@ class HandledIsolateMessenger<T> {
   ///
   /// The `onDone` handler will be called when the stream closes.
   /// The stream closes when `close` is called on `inPort`.
-  StreamSubscription<T> listen(void Function(dynamic message) onData, {Function onError, void Function() onDone, bool cancelOnError}) => _port.listen((var message) => _listenResponse(message, onData), onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+  StreamSubscription<dynamic> listen(
+    void Function(dynamic message) onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) =>
+      _port.listen(
+        (var message) => _listenResponse(message, onData),
+        onError: onError,
+        onDone: onDone,
+        cancelOnError: cancelOnError,
+      );
 
   /// Disposes of the [HandledIsolateMessenger] by closing the receiving port.
   void dispose() {
