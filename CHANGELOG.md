@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.1] - 2022-06-01
+
+* Fix [#25](https://github.com/deakjahn/isolate_handler/issues/25).
+
 ## [1.0.0] - 2021-03-07
 
 * Null safety

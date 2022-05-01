@@ -206,8 +206,8 @@ class IsolateHandler {
   /// Dispose of isolate.
   ///
   /// Takes name of isolate as given to `spawn`.
-  void kill(String name) {
-    isolates[name]?.dispose();
+  void kill(String name, {int priority = Isolate.beforeNextEvent}) {
+    isolates[name]?.dispose(priority: priority);
     isolates.remove(name);
   }
 }

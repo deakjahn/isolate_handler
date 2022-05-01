@@ -224,8 +224,8 @@ class HandledIsolate<T> {
   /// Disposes of the [Isolate] instance.
   ///
   /// Kills isolate and disposes ports used for communication.
-  void dispose() {
-    _isolate.kill();
+  void dispose({int priority = Isolate.beforeNextEvent}) {
+    _isolate.kill(priority: priority);
 
     _messenger.dispose();
   }
