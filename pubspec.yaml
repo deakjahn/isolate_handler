@@ -11,14 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # flutter_isolate: ^2.0.2
-
-  # Pending PR:
-  # https://github.com/rmawatson/flutter_isolate/pull/118
-  flutter_isolate:
-    git:
-      url: https://github.com/srmanc/flutter_isolate.git
-      ref: 156fa6518d280466b8b042b8316768319dc2ccc5
+  flutter_isolate: ^2.0.3
 
 dev_dependencies:
   flutter_test:
