@@ -161,6 +161,7 @@ class IsolateHandler {
   /// Throws if `name` is not unique.
   ///
   /// Returns spawned [HandledIsolate] instance.
+  @pragma('vm:entry-point')
   HandledIsolate spawn<T>(
     void Function(Map<String, dynamic>) function, {
     String? name,
@@ -175,8 +176,11 @@ class IsolateHandler {
     assert(name == null || !isolates.containsKey(name));
 
     name ??= '__anonymous_${_uid++}';
-    isolates[name] = HandledIsolate<T>(name: name, function: function, onInitialized: onInitialized);
-    isolates[name]!.messenger.listen((dynamic message) => onReceive?.call(message));
+    isolates[name] = HandledIsolate<T>(
+        name: name, function: function, onInitialized: onInitialized);
+    isolates[name]!
+        .messenger
+        .listen((dynamic message) => onReceive?.call(message));
     return isolates[name]!;
   }
 

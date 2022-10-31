@@ -2,7 +2,7 @@
   package="com.snarkypixel.isolate_handler_example">
 
   <application
-    android:name="io.flutter.app.FlutterApplication"
+    android:name="${applicationName}"
     android:icon="@mipmap/ic_launcher"
     android:label="isolate_handler_example">
     <activity
