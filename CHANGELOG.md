@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.2] - 2022-10-31
+
+* Fix [#34](https://github.com/deakjahn/isolate_handler/pull/34).
+
 ## [1.0.1] - 2022-06-01
 
 * Fix [#25](https://github.com/deakjahn/isolate_handler/issues/25).
